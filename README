@@ -1,0 +1,23 @@
+Solução numérica unidimensional da equação do calor pelo método Crank-Nicolson de diferenças finitas. Condição de Dirichlet no extremo inicial e condição de Neuman no extremo final.
+
+COMPILAÇÃO
+
+Requisitos: SDL2-devel, libomp-devel
+
+gcc difusao.c -o difusao -lm -fopenmp `sdl2-config --cflags --libs`
+
+UTILIZAÇÃO
+
+./difusao -c constante -t tempo < inicial.txt > final.txt
+
+constante: Constante da equação do calor (valor de c em du/dt = c^2 * d^2u/dx^2
+
+tempo: Intervalo em segundos até o resultado desejado. Se for igual a 0, o programa executará no modo interativo.
+
+inicial.txt: Arquivo contendo os valores iniciais em cada ponto. Um valor por linha. Máximo de 4096 linhas.
+
+final.txt: Valores em cada ponto após o intervalo especificado. Se não informado, os valores são exibidos na saída padrão.
+
+MODO INTERATIVO
+
+Para mudar o valor no extremo inicial (à esquerda), utilizar as setas para cima ou para baixo. Com o mouse, clicar sobre um ponto na janela para atrair o valor no extremo inicial.
