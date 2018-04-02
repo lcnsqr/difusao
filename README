@@ -2,7 +2,7 @@ Solução numérica unidimensional da equação do calor pelo método Crank-Nico
 
 COMPILAÇÃO
 
-Requisitos: SDL2-devel, libomp-devel
+Requisitos: SDL2-devel (libsdl2-dev no Debian), libomp-devel (libgomp1 no Debian)
 
 gcc difusao.c -o difusao -lm -fopenmp `sdl2-config --cflags --libs`
 
@@ -20,4 +20,4 @@ final.txt: Valores em cada ponto após o intervalo especificado. Se não informa
 
 MODO INTERATIVO
 
-Para mudar o valor no extremo inicial (à esquerda), utilizar as setas para cima ou para baixo. Com o mouse, clicar sobre um ponto na janela para atrair o valor no extremo inicial.
+Para mudar o valor no extremo inicial (à esquerda), utilizar as teclas para cima ou para baixo. Com o mouse, clicar sobre um ponto na janela para atrair o valor no extremo inicial.
