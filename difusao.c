@@ -161,7 +161,7 @@ int main(int argc, char** argv){
 	// Recolher opções e parâmetros
 	int opt;
 	// Constante da equação
-	float alpha;
+	float alfa;
 	// Estado depois de t segundos
 	int t;
 	if ( argc < 2 ){
@@ -171,7 +171,7 @@ int main(int argc, char** argv){
 	while ((opt = getopt(argc, argv, "c:t:")) != -1) {
 		switch (opt) {
 			case 'c':
-				alpha = fabs(atof(optarg));
+				alfa = fabs(atof(optarg));
 			break;
 			case 't':
 				t = abs(atoi(optarg));
