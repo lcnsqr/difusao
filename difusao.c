@@ -81,7 +81,7 @@ void rightB(Matrix* B, const float lambda){
 
 // Gerar inversa de matriz tridiagonal positivo-definida.
 // Res: Matriz resultante (inversa de A)
-// A: Matriz tridiagonal positivo-definida
+// A: Matriz tridiagonal
 void invTri(Matrix* res, Matrix* A){
 	// Matriz res deve ser identidade
 	mtrxRebuildWith(res, A->rows, A->cols, &eye);
@@ -101,7 +101,9 @@ void invTri(Matrix* res, Matrix* A){
 	int p[2];
 	p[0] = 0;
 	p[1] = 0;
-	// Primeira e última linha já prontas
+	// Matrix tridiagonal, com diagonal dominante estrita. 
+	// Inversão por escalonamento simples.
+	// Primeira linha já pronta
 	for (int i = 1; i < M.rows - 1; i++){
 		// i-ésima linha
 		mtrxRow(&row[0], &M, i);
@@ -128,6 +130,7 @@ void invTri(Matrix* res, Matrix* A){
 		mtrxPaste(res, &rowInv[0], p);
 	}
 	// Finalizar inversão diagonal-superior resultante
+	// Última linha já pronta
 	for (int i = M.rows - 2; i > 0; i--){
 		// i-ésima linha
 		mtrxRow(&row[0], &M, i);
