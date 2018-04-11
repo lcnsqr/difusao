@@ -215,8 +215,9 @@ int main(int argc, char** argv){
 	}
 	// Espaçamento entre pontos 
 	float h = (b-a)/m;
-	// Tamanho do passo no tempo
-	float k = 1e-3;
+	// Tamanho do passo no tempo calculado a partir 
+	// da constante alfa e do espaçamento h
+	float k = pow(h,2)/alfa;
 	// Constante auxiliar lambda
 	float lambda = k*alfa/pow(h,2);
 
