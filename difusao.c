@@ -161,7 +161,7 @@ int main(int argc, char** argv){
 	// Recolher opções e parâmetros
 	int opt;
 	// Constante da equação
-	float c;
+	float alpha;
 	// Estado depois de t segundos
 	int t;
 	if ( argc < 2 ){
@@ -171,7 +171,7 @@ int main(int argc, char** argv){
 	while ((opt = getopt(argc, argv, "c:t:")) != -1) {
 		switch (opt) {
 			case 'c':
-				c = atof(optarg);
+				alpha = fabs(atof(optarg));
 			break;
 			case 't':
 				t = abs(atoi(optarg));
@@ -208,16 +208,15 @@ int main(int argc, char** argv){
 	mtrxBuild(&w[1], m+1, 1);
 	mtrxEqual(&w[1], &w[0]);
 
-	// Constante (quadrada) da equação
-	float alfa = pow(c,2);
+	// Constante da equação
 	if ( alfa == 0 ){
 		fprintf(stderr, "A constante da equação não pode ser nula. \n");
 		exit(EXIT_FAILURE);
 	}
-	// Tamanho do passo no tempo
-	float k = 1e-3;
 	// Espaçamento entre pontos 
 	float h = (b-a)/m;
+	// Tamanho do passo no tempo
+	float k = 1e-3;
 	// Constante auxiliar lambda
 	float lambda = k*alfa/pow(h,2);
 

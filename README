@@ -10,7 +10,7 @@ UTILIZAÇÃO
 
 ./difusao -c constante -t tempo < inicial.txt > final.txt
 
-constante: Constante da equação do calor (valor de c em du/dt = c^2 * d^2u/dx^2
+constante: Constante da equação do calor (valor de c em du/dt = c * d^2u/dx^2
 
 tempo: Intervalo em segundos até o resultado desejado. Se for igual a 0, o programa executará no modo interativo.
 
