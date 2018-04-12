@@ -108,7 +108,9 @@ void videoGraphVector(Video* video, const float min, const float max, const floa
 void videoGraphVectorColor(Video* video, struct Cor* cor, const float min, const float max, const float* v, const int m){
 	// Proporção entre a quantidade de pontos no vetor e a resolução da imagem
 	const float r = (float)m/video->width;
-	int x, y, q, f;
+	// Variáveis auxiliares
+	float q;
+	int x, y, f;
 	char rgba[4];
 	#pragma omp parallel for private(x,y,q,f,rgba)
 	for (int i = 0; i < video->frameSize; i += video->depth){
@@ -119,7 +121,12 @@ void videoGraphVectorColor(Video* video, struct Cor* cor, const float min, const
 		// Valor relativo à posição x
 		q = v[(int)floor(r*x)];
 		// Valor da função no quadro
-		f = (video->height-1) * ( (int)q - min ) / (max-min);
+		f = (int)((video->height-1) * ( q - min ) / (max-min));
+
+		// Ignorar se valor caiu fora da imagem
+		if ( f < 0 ) f = 0;
+		if ( f >= video->height ) f = video->height - 1;
+
 		// Cor de fundo
 		/*
 		for (int d = 0; d < video->depth; d++)

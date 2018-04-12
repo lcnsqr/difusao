@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include "SDL.h"
+#include "SDL_ttf.h"
 #include "matrix.h"
 #include "color.h"
 #include "video.h"
@@ -14,11 +15,11 @@
 
 // Extremidade inicial e final
 #define POS0 0
-#define POS1 1
+#define POS1 100
 
 // Menor e maior valores de leitura
 #define MINVAL 0
-#define MAXVAL 1023
+#define MAXVAL 1
 
 // Constantes de exibição para o modo interativo
 #define DEPTH 4
@@ -218,8 +219,11 @@ int main(int argc, char** argv){
 	// Tamanho do passo no tempo calculado a partir 
 	// da constante alfa e do espaçamento h
 	float k = pow(h,2)/alfa;
+	// Limitar o passo no tempo em 1 segundo
+	k = ( k > 1 ) ? 1 : k;
 	// Constante auxiliar lambda
 	float lambda = k*alfa/pow(h,2);
+	//fprintf(stderr, "h = %.9f\nk = %.9f\n", h, k);
 
 	// Matrizes da operação
 	Matrix A, invA, B;
@@ -241,10 +245,11 @@ int main(int argc, char** argv){
 	mtrxDiscard(&invA);
 	mtrxDiscard(&B);
 
+	// Tempo acumulado das iterações
+	float ts = 0;
 	// Se t > 0, modo não interativo
 	if ( t > 0 ){
 		// Contar os passos no tempo até atingir o instante desejado
-		float ts = 0;
 		while (ts <= t){
 			// Próximo resultado a partir do estado atual
 			mtrxMul(&w[1], &C, &w[0]);
@@ -283,10 +288,24 @@ int main(int argc, char** argv){
 
 	texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, width, height);
 
-	// Intervalo entre atualizações para corresponder a 25 FPS
-	struct timespec s;
-	s.tv_sec = 0;
-	s.tv_nsec = 1000000000L * k;
+	// Renderizar texto (tempo decorrido)
+	if ( TTF_Init() < 0 ){
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Erro ao executar TTF_Init: %s", TTF_GetError());
+	}
+	TTF_Font* txtFont = TTF_OpenFont("FreeSans.ttf", 18);
+	SDL_Color txtColorF = {255, 255, 255, 255};
+	SDL_Color txtColorB = {54, 78, 89, 255};
+	char *txt = malloc(256);;
+	sprintf(txt, "%.1f", 0);
+	SDL_Surface* txtSurface = TTF_RenderText_Shaded(txtFont, txt, txtColorF, txtColorB);
+	SDL_Texture* txtTexture = SDL_CreateTextureFromSurface(renderer, txtSurface);
+	int txtWidth, txtHeight;
+	SDL_QueryTexture(txtTexture, NULL, NULL, &txtWidth, &txtHeight);
+	SDL_Rect txtRect;
+	txtRect.x = width - txtWidth;
+	txtRect.y = height - txtHeight;
+	txtRect.w = txtWidth;
+	txtRect.h = txtHeight;
 
 	// Estrutura de mapeamento posição -> cor
 	struct Cor cor;
@@ -299,6 +318,27 @@ int main(int argc, char** argv){
 	while (1){
 		// Gerar gráfico
 		videoGraphVectorColor(&video, &cor, min, max, w[0]._, m);
+
+		// Atualizar exibição
+		SDL_UpdateTexture(texture, NULL, video.frame, DEPTH * width * sizeof(char));
+		SDL_RenderClear(renderer);
+		SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+		// Atualizar exibição do tempo
+		sprintf(txt, "Tempo decorrido: %.1f segundos", ts);
+		SDL_FreeSurface(txtSurface);
+		txtSurface = TTF_RenderText_Shaded(txtFont, txt, txtColorF, txtColorB);
+		SDL_DestroyTexture(txtTexture);
+		txtTexture = SDL_CreateTextureFromSurface(renderer, txtSurface);
+		SDL_QueryTexture(txtTexture, NULL, NULL, &txtWidth, &txtHeight);
+		txtRect.x = width - txtWidth;
+		txtRect.y = height - txtHeight;
+		txtRect.w = txtWidth;
+		txtRect.h = txtHeight;
+		SDL_RenderCopy(renderer, txtTexture, NULL, &txtRect);
+
+		SDL_RenderPresent(renderer);
+
 		// Recolher eventos
 		SDL_PollEvent(&event);
 		if (event.type == SDL_QUIT){
@@ -309,37 +349,32 @@ int main(int argc, char** argv){
 				// Tecla "q" encerra
 				break;
 			}
-			else if ( event.key.keysym.sym == SDLK_UP && w[0]._[0] < 1023 ){ 
+			else if ( event.key.keysym.sym == SDLK_UP && w[0]._[0] < max ){ 
 				// Seta pra cima aumenta o valor no extremo a
-				w[0]._[0]++;
+				w[0]._[0] += (max-min)/height;
 			}
-			else if ( event.key.keysym.sym == SDLK_DOWN && w[0]._[0] > 0 ){ 
+			else if ( event.key.keysym.sym == SDLK_DOWN && w[0]._[0] > min ){ 
 				// Seta pra baixo reduz o valor no extremo a
-				w[0]._[0]--;
+				w[0]._[0] -= (max-min)/height;
 			}
 		}
 		SDL_PumpEvents();
 		if (SDL_GetMouseState(&curPos[0], &curPos[1]) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 			// Se botão do mouse pressionado, aproximar o valor 
 			// no extremo para a posição vertical do cursor
-			w[0]._[0] += 1e-2*(1023 - (float)curPos[1]/height * 1023.0 - w[0]._[0]);
+			w[0]._[0] += ((1 - (float)curPos[1]/height) * (max-min) - w[0]._[0]);
 		}
-
-		// Atualizar exibição
-		SDL_UpdateTexture(texture, NULL, video.frame, DEPTH * width * sizeof(char));
-		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, texture, NULL, NULL);
-		SDL_RenderPresent(renderer);
-
-		// Pausa entre quadros
-		nanosleep(&s, NULL);
 
 		// Próximo resultado a partir do estado atual
 		mtrxMul(&w[1], &C, &w[0]);
 		mtrxEqual(&w[0], &w[1]);
+
+		// Tempo decorrido
+		ts += k;
 	}
 
 	// Encerrar SDL
+	TTF_CloseFont(txtFont);
 	SDL_DestroyTexture(texture);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);

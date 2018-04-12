@@ -1,10 +1,14 @@
 Solução numérica unidimensional da equação do calor pelo método Crank-Nicolson de diferenças finitas. Condição de Dirichlet no extremo inicial e condição de Neuman no extremo final.
 
+REQUISITOS 
+
+SDL2-devel (libsdl2-dev no Debian)
+SDL2_ttf-devel (libsdl2-ttf-dev no Debian)
+libomp-devel (libgomp1 no Debian)
+
 COMPILAÇÃO
 
-Requisitos: SDL2-devel (libsdl2-dev no Debian), libomp-devel (libgomp1 no Debian)
-
-gcc difusao.c -o difusao -lm -fopenmp `sdl2-config --cflags --libs`
+gcc difusao.c -o difusao -lm -fopenmp `sdl2-config --cflags --libs` -lSDL2_ttf
 
 UTILIZAÇÃO
 
