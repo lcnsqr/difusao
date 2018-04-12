@@ -1,4 +1,4 @@
-Solução numérica unidimensional da equação do calor pelo método Crank-Nicolson de diferenças finitas. Condição de Dirichlet no extremo inicial e condição de Neuman no extremo final.
+Solução numérica unidimensional da equação do calor pelo método Crank-Nicolson de diferenças finitas. Condição de Dirichlet no extremo inicial e condição de Neumann no extremo final.
 
 REQUISITOS 
 
