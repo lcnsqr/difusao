@@ -80,7 +80,7 @@ void rightB(Matrix* B, const float lambda){
 	B->_[B->size-1] = 1;
 }
 
-// Gerar inversa de matriz tridiagonal positivo-definida.
+// Gerar inversa de matriz tridiagonal
 // Res: Matriz resultante (inversa de A)
 // A: Matriz tridiagonal
 void invTri(Matrix* res, Matrix* A){
@@ -368,6 +368,7 @@ int main(int argc, char** argv){
 		// Próximo resultado a partir do estado atual
 		mtrxMul(&w[1], &C, &w[0]);
 		mtrxEqual(&w[0], &w[1]);
+		w[0]._[m] = 0;
 
 		// Tempo decorrido
 		ts += k;
