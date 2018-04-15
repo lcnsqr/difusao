@@ -15,11 +15,11 @@
 
 // Extremidade inicial e final
 #define POS0 0
-#define POS1 100
+#define POS1 127
 
 // Menor e maior valores de leitura
 #define MINVAL 0
-#define MAXVAL 1
+#define MAXVAL 127
 
 // Constantes de exibição para o modo interativo
 #define DEPTH 4
@@ -368,6 +368,15 @@ int main(int argc, char** argv){
 		// Próximo resultado a partir do estado atual
 		mtrxMul(&w[1], &C, &w[0]);
 		mtrxEqual(&w[0], &w[1]);
+
+		/*
+		 * Valor dinâmico no extremo com a condição de Neumann
+		 */
+		// Valor em b tende a subir numa taxa proporcional
+		//if ( fabs(w[0]._[m-1]) < 127.0 ) w[0]._[m] = 0.075*sqrt(1+w[0]._[m-1]);
+		//else w[0]._[m] = 0;
+
+		// Manter du/dx = 0 em b
 		w[0]._[m] = 0;
 
 		// Tempo decorrido
