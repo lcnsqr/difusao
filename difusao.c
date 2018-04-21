@@ -218,7 +218,7 @@ int main(int argc, char** argv){
 	float h = (b-a)/m;
 	// Tamanho do passo no tempo calculado a partir 
 	// da constante alfa e do espaçamento h
-	float k = pow(h,2)/alfa;
+	float k = pow(h,2)/((2+1e-4)*alfa);
 	// Limitar o passo no tempo em 1 segundo
 	k = ( k > 1 ) ? 1 : k;
 	// Constante auxiliar lambda
